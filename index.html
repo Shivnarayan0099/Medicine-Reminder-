@@ -1,217 +1,239 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Medicine Reminder Bot</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #e8f0fe;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-    header {
-      background: #1a73e8;
-      color: white;
-      padding: 20px;
-      text-align: center;
-      font-size: 2rem;
-    }
-    #chat-container {
-      flex: 1;
-      padding: 20px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-    }
-    .message {
-      margin: 10px 0;
-      padding: 10px 15px;
-      border-radius: 15px;
-      max-width: 70%;
-      word-wrap: break-word;
-      font-size: 1.1rem;
-    }
-    .user {
-      background: #c2dbff;
-      align-self: flex-end;
-      text-align: right;
-      margin-left: auto;
-    }
-    .bot {
-      background: #ffffff;
-      align-self: flex-start;
-      text-align: left;
-      margin-right: auto;
-      border: 1px solid #ccc;
-    }
-    #input-area {
-      display: flex;
-      padding: 15px;
-      background: #f1f3f4;
-      border-top: 1px solid #ccc;
-    }
-    #user-input {
-      flex: 1;
-      padding: 10px;
-      font-size: 1.1rem;
-      border-radius: 10px;
-      border: 1px solid #ccc;
-    }
-    #send-btn, #mic-btn {
-      padding: 10px 20px;
-      margin-left: 10px;
-      background: #1a73e8;
-      color: white;
-      font-size: 1.1rem;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-    }
-    #reminder-form {
-      background: #f9f9f9;
-      padding: 20px;
-      margin: 10px;
-      border-radius: 15px;
-      border: 1px solid #ccc;
-    }
-    #reminder-form input, #reminder-form button {
-      margin: 5px 0;
-      padding: 8px;
-      width: 100%;
-      font-size: 1rem;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-    }
-    #reminder-form button {
-      background: #1a73e8;
-      color: white;
-      border: none;
-      margin-top: 10px;
-    }
-    #typing-indicator {
-      font-style: italic;
-      color: gray;
-      margin: 10px;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>MedAI Assistant</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+}
+
+body {
+  display: flex;
+  height: 100vh;
+  background: #0f172a;
+  color: white;
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: 260px;
+  background: linear-gradient(180deg, #020617, #0f172a);
+  padding: 20px;
+  border-right: 1px solid rgba(255,255,255,0.05);
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 30px;
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.menu div {
+  padding: 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.menu div:hover {
+  background: rgba(255,255,255,0.08);
+}
+
+/* MAIN */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* HEADER */
+.header {
+  padding: 15px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  font-weight: 500;
+}
+
+/* CHAT */
+#chat-container {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.message {
+  max-width: 65%;
+  padding: 12px 15px;
+  border-radius: 12px;
+  margin: 10px 0;
+  line-height: 1.4;
+}
+
+.user {
+  background: linear-gradient(45deg, #3b82f6, #06b6d4);
+  align-self: flex-end;
+}
+
+.bot {
+  background: #1e293b;
+}
+
+/* INPUT */
+.input-area {
+  display: flex;
+  padding: 15px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+input {
+  flex: 1;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  background: #1e293b;
+  color: white;
+}
+
+button {
+  margin-left: 10px;
+  padding: 10px 15px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(45deg, #3b82f6, #06b6d4);
+  color: white;
+  transition: 0.3s;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+/* REMINDER PANEL */
+.reminder {
+  padding: 20px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.reminder input {
+  margin-top: 10px;
+  width: 100%;
+}
+
+.reminder button {
+  width: 100%;
+  margin-top: 10px;
+}
+</style>
 </head>
+
 <body>
 
-<header>💊 Medicine Reminder Bot</header>
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="logo">💊 MedAI</div>
 
-<div id="reminder-form">
-  <h3>Set a Medicine Reminder</h3>
-  <input type="text" id="medicine-name" placeholder="Enter Medicine Name" required>
-  <input type="datetime-local" id="reminder-time" required>
-  <button onclick="setReminder()">Set Reminder</button>
+  <div class="menu">
+    <div>💬 Chat</div>
+    <div>⏰ Reminders</div>
+    <div>📊 History</div>
+    <div>⚙ Settings</div>
+  </div>
 </div>
 
-<div id="chat-container"></div>
-<div id="typing-indicator" style="display:none;">Bot is typing...</div>
+<!-- MAIN -->
+<div class="main">
 
-<div id="input-area">
-  <input type="text" id="user-input" placeholder="Ask about any medicine..." />
-  <button id="mic-btn" onclick="startListening()">🎤</button>
-  <button id="send-btn" onclick="sendMessage()">Send</button>
+  <div class="header">AI Medicine Assistant</div>
+
+  <div id="chat-container"></div>
+
+  <div class="input-area">
+    <input type="text" id="user-input" placeholder="Ask about medicines...">
+    <button onclick="startListening()">🎤</button>
+    <button onclick="sendMessage()">Send</button>
+  </div>
+
+  <div class="reminder">
+    <h4>Set Reminder</h4>
+    <input type="text" id="medicine-name" placeholder="Medicine name">
+    <input type="datetime-local" id="reminder-time">
+    <button onclick="setReminder()">Set Reminder</button>
+  </div>
+
 </div>
 
 <script>
-  const chatContainer = document.getElementById('chat-container');
-  const userInput = document.getElementById('user-input');
-  const typingIndicator = document.getElementById('typing-indicator');
+const chat = document.getElementById('chat-container');
+const input = document.getElementById('user-input');
 
-  const apiKey = 'AIzaSyD5b15axv8x05B7-xz6HcMk0DFHc4oIH7o'; 
-  const geminiEndpoint = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + apiKey;
+const apiKey = "YOUR_API_KEY";
+const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
-  function appendMessage(sender, text) {
-    const messageDiv = document.createElement('div');
-    messageDiv.classList.add('message', sender);
-    messageDiv.innerHTML = text;
-    chatContainer.appendChild(messageDiv);
-    chatContainer.scrollTop = chatContainer.scrollHeight;
-  }
+function addMessage(type, text) {
+  const div = document.createElement('div');
+  div.classList.add('message', type);
+  div.innerHTML = text;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+}
 
-  async function sendMessage() {
-    const message = userInput.value.trim();
-    if (message === '') return;
+async function sendMessage() {
+  const msg = input.value.trim();
+  if (!msg) return;
 
-    appendMessage('user', message);
-    userInput.value = '';
+  addMessage('user', msg);
+  input.value = '';
 
-    typingIndicator.style.display = 'block';
+  const res = await fetch(endpoint, {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: `Explain medicine ${msg} briefly.` }] }]
+    })
+  });
 
-    let prompt = '';
+  const data = await res.json();
+  const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "No info";
 
-    if (message.toLowerCase().includes('hello') || message.toLowerCase().includes('hi') || message.length <= 3) {
-      prompt = "Respond in a friendly and short way: 'Hello! How can I assist you regarding medicines today?'.";
-    } else {
-      prompt = `Give short and useful information about the medicine '${message}' like its use, precautions, and side effects in maximum 5-6 lines.`;
-    }
+  addMessage('bot', reply.replace(/\n/g, "<br>"));
+}
 
-    const response = await fetch(geminiEndpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }]
-      })
-    });
+function setReminder() {
+  const name = document.getElementById('medicine-name').value;
+  const time = document.getElementById('reminder-time').value;
 
-    const data = await response.json();
-    typingIndicator.style.display = 'none';
+  const delay = new Date(time) - new Date();
 
-    const botMessage = data.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't find information.";
-    appendMessage('bot', botMessage.replace(/\n/g, '<br>'));
-  }
+  setTimeout(() => {
+    alert(`💊 Take ${name}`);
+    addMessage('bot', `⏰ Time to take <b>${name}</b>`);
+  }, delay);
 
-  function setReminder() {
-    const medName = document.getElementById('medicine-name').value.trim();
-    const reminderTime = document.getElementById('reminder-time').value;
+  addMessage('bot', `✅ Reminder set for ${name}`);
+}
 
-    if (medName === '' || reminderTime === '') {
-      alert('Please enter both medicine name and time.');
-      return;
-    }
+function startListening() {
+  const rec = new webkitSpeechRecognition();
+  rec.start();
 
-    const time = new Date(reminderTime).getTime();
-    const now = new Date().getTime();
-    const delay = time - now;
-
-    if (delay <= 0) {
-      alert('Please select a future time.');
-      return;
-    }
-
-    setTimeout(() => {
-      alert(`💊 Reminder: It's time to take your medicine - ${medName}!`);
-      appendMessage('bot', `⏰ Reminder: It's time to take your medicine - <b>${medName}</b>!`);
-    }, delay);
-
-    appendMessage('bot', `✅ Reminder set for <b>${medName}</b> at ${new Date(reminderTime).toLocaleString()}`);
-    
-    document.getElementById('medicine-name').value = '';
-    document.getElementById('reminder-time').value = '';
-  }
-
-  function startListening() {
-    if (!('webkitSpeechRecognition' in window)) {
-      alert('Voice recognition not supported in this browser.');
-      return;
-    }
-    const recognition = new webkitSpeechRecognition();
-    recognition.lang = 'en-US';
-    recognition.start();
-
-    recognition.onresult = function(event) {
-      const transcript = event.results[0][0].transcript;
-      userInput.value = transcript;
-    };
-  }
+  rec.onresult = e => {
+    input.value = e.results[0][0].transcript;
+  };
+}
 </script>
 
 </body>
